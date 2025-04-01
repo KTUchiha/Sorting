@@ -9,6 +9,48 @@ Here is a list of algorithms:
 7. [Heap Sort](heapsort.html)
 8. [Merge Sort](mergesort.html)
 
+   
+## Sorting Algorithms: Time and Space Complexity
+
+| Algorithm | Best Case Time | Average Case Time | Worst Case Time | Space Complexity | Stable? | Notes |
+|---|---|---|---|---|---|---|
+| Bubble Sort | O(n) | O(n²) | O(n²) | O(1) | Yes | Best case occurs when array is already sorted |
+| Selection Sort | O(n²) | O(n²) | O(n²) | O(1) | No | Always performs the same number of comparisons |
+| Insertion Sort | O(n) | O(n²) | O(n²) | O(1) | Yes | Efficient for small or nearly sorted data |
+| Quick Sort | O(n log n) | O(n log n) | O(n²) | O(log n) | No | Worst case occurs with poor pivot selection |
+| Heap Sort | O(n log n) | O(n log n) | O(n log n) | O(1) | No | Guaranteed O(n log n) performance |
+| Merge Sort | O(n log n) | O(n log n) | O(n log n) | O(n) | Yes | Uses extra space proportional to input size |
+
+## Additional Information
+
+- **Stable Sort**: A sorting algorithm is stable if it preserves the relative order of equal elements in the input array.
+
+- **In-place Sort**: Algorithms with O(1) space complexity are generally considered in-place (they don't require significant extra memory).
+
+- **Adaptive Sort**: An algorithm is adaptive if it takes advantage of existing order in the input (Bubble and Insertion sorts are adaptive).
+
+## Practical Considerations
+
+- **For small arrays** (n < 50): Insertion Sort is often fastest due to low overhead
+- **For nearly sorted arrays**: Bubble Sort and Insertion Sort perform well
+- **For general purpose sorting**: Quick Sort typically performs best in practice
+- **When stability matters**: Use Merge Sort or Insertion Sort
+- **When memory is limited**: Consider Heap Sort
+- **When worst-case performance is critical**: Use Merge Sort or Heap Sort
+
+## Visual Complexity Comparison
+
+```
+             Best      Average    Worst     Space
+O(1)      ▐░░░░░░▌   ▐░░░░░░▌   ▐░░░░░░▌  ▐██████▌  ← Selection, Bubble, Insertion, Heap
+O(log n)  ▐░░░░░░▌   ▐░░░░░░▌   ▐░░░░░░▌  ▐██░░░░▌  ← Quick
+O(n)      ▐██░░░░▌   ▐░░░░░░▌   ▐░░░░░░▌  ▐░░░░░░▌  ← Merge
+O(n log n)▐░░████▌   ▐██████▌   ▐██░░░░▌  ▐░░░░░░▌
+O(n²)     ▐░░░░░░▌   ▐░░░░░░▌   ▐░░████▌  ▐░░░░░░▌
+```
+
+Legend: █ = This complexity applies, ░ = This complexity doesn't apply
+
 ## Java Implementation of Sorting Algorithms
 
 Below is a minimalistic implementation of various sorting algorithms in Java. 

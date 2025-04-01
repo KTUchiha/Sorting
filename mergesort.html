@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MergeSort: Algorithm & Visualization</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      line-height: 1.6;
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    pre {
+      background-color: #f8f8f8;
+      border: 1px solid #ccc;
+      padding: 10px;
+      overflow-x: auto;
+    }
+    /* Container for the step-by-step visualization */
+    #steps-container {
+      max-width: 950px;
+      margin: 20px auto;
+      text-align: left;
+    }
+    .step-block {
+      margin-bottom: 40px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .step-title {
+      font-weight: bold;
+      font-size: 18px;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eee;
+    }
+    .array-row {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      margin: 15px 0;
+    }
+    .sub-array-container {
+      margin-bottom: 15px;
+    }
+    .sub-array-row {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      margin: 5px 0;
+    }
+    .sub-array-label {
+      font-weight: bold;
+      margin-top: 10px;
+      text-align: center;
+    }
+    .box {
+      width: 50px;
+      height: 50px;
+      border: 1px solid #999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 16px;
+      color: #000;
+    }
+    /* Color codes */
+    .main-array {
+      background-color: #b3e0f2;
+    }
+    .left-array {
+      background-color: #ffcc99;
+    }
+    .right-array {
+      background-color: #ffb3e6;
+    }
+    .merged-array {
+      background-color: #c2f0c2;
+    }
+    .compare-left {
+      background-color: #ff9933;
+      color: #fff;
+    }
+    .compare-right {
+      background-color: #ff66cc;
+      color: #fff;
+    }
+    .selected-element {
+      background-color: #33cc33;
+      color: #fff;
+    }
+    .sorted {
+      background-color: #9370DB;
+      color: #fff;
+    }
+    
+    /* Tree visualization styles */
+    .visualizations {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    
+    .visualization-title {
+      font-weight: bold;
+      margin: 15px 0 10px 0;
+    }
+    
+    .merge-tree-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      overflow-x: auto;
+    }
+    
+    .tree-level {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      gap: 10px;
+    }
+    
+    .tree-node {
+      padding: 10px;
+      border: 2px solid #666;
+      border-radius: 8px;
+      min-width: 50px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      background-color: #f0f0f0;
+    }
+    
+    .tree-node.active {
+      border-color: #33cc33;
+      background-color: #eaffea;
+    }
+    
+    .tree-node-label {
+      font-size: 12px;
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #555;
+    }
+    
+    .tree-node-content {
+      display: flex;
+      gap: 5px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    
+    .tree-node-value {
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #999;
+      font-weight: bold;
+    }
+    
+    /* Legend */
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin: 20px auto;
+      justify-content: center;
+      padding: 10px;
+      background-color: #f8f8f8;
+      border-radius: 8px;
+      max-width: 850px;
+    }
+    
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .legend-color {
+      width: 20px;
+      height: 20px;
+      border: 1px solid #999;
+    }
+    
+    .algorithm-explanation {
+      background-color: #f9f9f9;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 20px auto;
+      max-width: 800px;
+    }
+
+    /* Control section styles */
+    .control-section {
+      text-align: center;
+      margin: 20px 0;
+    }
+    
+    .refresh-button {
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 0 10px;
+      transition: background-color 0.3s;
+    }
+    
+    .refresh-button:hover {
+      background-color: #45a049;
+    }
+
+    /* Phase indicator */
+    .phase-indicator {
+      background-color: #f0f0f0;
+      border-radius: 4px;
+      padding: 10px;
+      margin: 10px auto;
+      max-width: 800px;
+      text-align: center;
+      font-weight: bold;
+    }
+    
+    /* Connector lines for the recursion tree */
+    .connectors-container {
+      position: relative;
+      width: 100%;
+      height: 20px;
+      margin-bottom: 5px;
+    }
+    
+    .connector {
+      position: absolute;
+      height: 20px;
+      border-left: 2px solid #666;
+      border-bottom: 2px solid #666;
+      border-right: 2px solid #666;
+    }
+  </style>
+</head>
+<body>
+  <h1>MergeSort: Algorithm & Visualization</h1>
+  
+  <div class="algorithm-explanation">
+    <h2>Algorithm Explanation</h2>
+    <p>
+      <strong>MergeSort</strong> is a divide-and-conquer sorting algorithm that works as follows:
+    </p>
+    <ol>
+      <li><strong>Divide:</strong> Recursively split the array into two halves until each sub-array contains a single element.</li>
+      <li><strong>Conquer:</strong> Merge pairs of sorted sub-arrays to create larger sorted arrays.</li>
+    </ol>
+    <p>Time Complexity: O(n log n) in all cases. Space Complexity: O(n).</p>
+  </div>
+  
+  <div class="control-section">
+    <button id="refresh-btn" class="refresh-button">Generate New Random Array</button>
+  </div>
+  
+  <div class="phase-indicator" id="phase-indicator">
+    Phase: Initializing...
+  </div>
+  
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-color main-array"></div>
+      <span>Main Array</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color left-array"></div>
+      <span>Left Sub-array</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color right-array"></div>
+      <span>Right Sub-array</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color merged-array"></div>
+      <span>Merged Array</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color compare-left"></div>
+      <span>Comparing (Left)</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color compare-right"></div>
+      <span>Comparing (Right)</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color selected-element"></div>
+      <span>Selected Element</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color sorted"></div>
+      <span>Final Sorted Element</span>
+    </div>
+  </div>
+  
+  <div id="steps-container"></div>
+  
+  <script>
+    /**
+     * Generate a random array of integers
+     * @param {number} size - Size of the array
+     * @param {number} min - Minimum value (inclusive)
+     * @param {number} max - Maximum value (inclusive)
+     * @returns {Array} - Random array of integers
+     */
+    function generateRandomArray(size, min, max) {
+      const array = [];
+      for (let i = 0; i < size; i++) {
+        array.push(Math.floor(Math.random() * (max - min + 1)) + min);
+      }
+      return array;
+    }
+    
+    /**
+     * Performs mergesort on the given array and records all steps
+     * @param {Array} arr - The array to sort
+     * @returns {Array} - Array of step objects describing the sorting process
+     */
+    function mergesortSteps(arr) {
+      const steps = [];
+      
+      // Record initial array state
+      steps.push({
+        phase: "Initial Array",
+        note: "Starting with the unsorted array.",
+        mainArray: arr.slice(),
+        subArrays: [{
+          label: "Initial Array",
+          array: arr.slice(),
+          type: "main"
+        }],
+        treeState: buildInitialTree(arr),
+        activeTreeNode: null,
+        isFinalSorted: false
+      });
+      
+      // Perform the merge sort
+      const sortedArray = mergesortWithSteps(arr.slice(), 0, arr.length - 1, steps, buildInitialTree(arr));
+      
+      // Record the final sorted array
+      steps.push({
+        phase: "Final Sorted Array",
+        note: "The array is now fully sorted.",
+        mainArray: sortedArray,
+        subArrays: [{
+          label: "Sorted Array",
+          array: sortedArray,
+          type: "main"
+        }],
+        treeState: steps[steps.length - 1].treeState,
+        activeTreeNode: null,
+        isFinalSorted: true
+      });
+      
+      return steps;
+    }
+    
+    /**
+     * Build the initial recursion tree structure
+     * @param {Array} arr - The input array
+     * @returns {Object} - The tree structure
+     */
+    function buildInitialTree(arr) {
+      // Start with the root level
+      const tree = [
+        [{ label: "Full Array", array: arr.slice(), active: false }]
+      ];
+      
+      return tree;
+    }
+    
+    /**
+     * Update the recursion tree state for the current step
+     * @param {Array} treeState - Current tree state
+     * @param {number} level - Tree level to update
+     * @param {number} position - Position in the level
+     * @param {Array} array - Array data to update
+     * @param {boolean} active - Whether this node is active
+     * @returns {Array} - Updated tree state
+     */
+    function updateTreeState(treeState, level, position, array, active) {
+      // Clone the tree state to avoid modifying the original
+      const newTreeState = JSON.parse(JSON.stringify(treeState));
+      
+      // Ensure the level exists
+      while (newTreeState.length <= level) {
+        newTreeState.push([]);
+      }
+      
+      // Ensure the position exists in the level
+      while (newTreeState[level].length <= position) {
+        newTreeState[level].push(null);
+      }
+      
+      // Update the node
+      newTreeState[level][position] = {
+        label: `Level ${level}, Pos ${position}`,
+        array: array,
+        active: active
+      };
+      
+      return newTreeState;
+    }
+    
+    /**
+     * Recursive mergesort implementation that records steps
+     * @param {Array} arr - The array to sort
+     * @param {number} left - Start index
+     * @param {number} right - End index
+     * @param {Array} steps - Array to record steps
+     * @param {Array} treeState - Current state of the recursion tree
+     * @param {number} level - Current recursion level (for tree visualization)
+     * @param {number} position - Position in the current level (for tree visualization)
+     * @returns {Array} - Sorted array
+     */
+    function mergesortWithSteps(arr, left, right, steps, treeState, level = 1, position = 0) {
+      // Base case: array of size 1 is already sorted
+      if (left >= right) {
+        const subArray = [arr[left]];
+        
+        // Update tree state for this leaf node
+        const newTreeState = updateTreeState(treeState, level, position, subArray, true);
+        
+        steps.push({
+          phase: "Base Case",
+          note: `Sub-array of size 1 [${subArray}] is already sorted.`,
+          mainArray: arr.slice(),
+          subArrays: [{
+            label: `Sub-array (indices ${left}-${right})`,
+            array: subArray,
+            type: "merged"
+          }],
+          treeState: newTreeState,
+          activeTreeNode: { level, position }
+        });
+        
+        return subArray;
+      }
+      
+      // Find the middle point
+      const mid = Math.floor((left + right) / 2);
+      
+      // Record the current array division
+      const currentSubArray = arr.slice(left, right + 1);
+      const leftSubArray = arr.slice(left, mid + 1);
+      const rightSubArray = arr.slice(mid + 1, right + 1);
+      
+      // Update tree state for this node
+      const newTreeState = updateTreeState(treeState, level, position, currentSubArray, true);
+      
+      steps.push({
+        phase: "Divide",
+        note: `Dividing array [${currentSubArray}] into left [${leftSubArray}] and right [${rightSubArray}] sub-arrays.`,
+        mainArray: arr.slice(),
+        subArrays: [
+          {
+            label: `Current sub-array (indices ${left}-${right})`,
+            array: currentSubArray,
+            type: "main"
+          },
+          {
+            label: `Left sub-array (indices ${left}-${mid})`,
+            array: leftSubArray,
+            type: "left"
+          },
+          {
+            label: `Right sub-array (indices ${mid+1}-${right})`,
+            array: rightSubArray,
+            type: "right"
+          }
+        ],
+        treeState: newTreeState,
+        activeTreeNode: { level, position }
+      });
+      
+      // Recursively sort left and right halves
+      const sortedLeft = mergesortWithSteps(arr, left, mid, steps, steps[steps.length - 1].treeState, level + 1, position * 2);
+      const sortedRight = mergesortWithSteps(arr, mid + 1, right, steps, steps[steps.length - 1].treeState, level + 1, position * 2 + 1);
+      
+      // Merge the sorted halves
+      const merged = merge(sortedLeft, sortedRight, steps, arr, left, mid, right, steps[steps.length - 1].treeState, level, position);
+      
+      // Copy merged array back to the original array
+      for (let i = 0; i < merged.length; i++) {
+        arr[left + i] = merged[i];
+      }
+      
+      return merged;
+    }
+    
+    /**
+     * Merge two sorted arrays and record steps
+     * @param {Array} left - Left sorted array
+     * @param {Array} right - Right sorted array
+     * @param {Array} steps - Array to record steps
+     * @param {Array} originalArr - Original array being sorted
+     * @param {number} leftIdx - Start index of left sub-array
+     * @param {number} midIdx - Middle index
+     * @param {number} rightIdx - End index of right sub-array
+     * @param {Array} treeState - Current state of the recursion tree
+     * @param {number} level - Current recursion level
+     * @param {number} position - Position in the current level
+     * @returns {Array} - Merged sorted array
+     */
+    function merge(left, right, steps, originalArr, leftIdx, midIdx, rightIdx, treeState, level, position) {
+      let result = [];
+      let leftPtr = 0;
+      let rightPtr = 0;
+      
+      steps.push({
+        phase: "Merge",
+        note: `Merging left [${left}] and right [${right}] sub-arrays.`,
+        mainArray: originalArr.slice(),
+        subArrays: [
+          {
+            label: `Left sorted sub-array (indices ${leftIdx}-${midIdx})`,
+            array: left,
+            type: "left"
+          },
+          {
+            label: `Right sorted sub-array (indices ${midIdx+1}-${rightIdx})`,
+            array: right,
+            type: "right"
+          },
+          {
+            label: "Merged array (so far)",
+            array: [],
+            type: "merged"
+          }
+        ],
+        treeState: treeState,
+        activeTreeNode: { level, position },
+        compareIndices: { left: -1, right: -1 }
+      });
+      
+      // Compare elements from both arrays and merge
+      while (leftPtr < left.length && rightPtr < right.length) {
+        // Record comparison step
+        const compareStep = {
+          phase: "Merge (Compare)",
+          note: `Comparing left[${leftPtr}] = ${left[leftPtr]} with right[${rightPtr}] = ${right[rightPtr]}.`,
+          mainArray: originalArr.slice(),
+          subArrays: [
+            {
+              label: `Left sorted sub-array (indices ${leftIdx}-${midIdx})`,
+              array: left,
+              type: "left",
+              compareIndex: leftPtr
+            },
+            {
+              label: `Right sorted sub-array (indices ${midIdx+1}-${rightIdx})`,
+              array: right,
+              type: "right",
+              compareIndex: rightPtr
+            },
+            {
+              label: "Merged array (so far)",
+              array: result.slice(),
+              type: "merged"
+            }
+          ],
+          treeState: treeState,
+          activeTreeNode: { level, position },
+          compareIndices: { left: leftPtr, right: rightPtr }
+        };
+        
+        if (left[leftPtr] <= right[rightPtr]) {
+          result.push(left[leftPtr]);
+          compareStep.note += ` Left element is smaller, adding ${left[leftPtr]} to merged array.`;
+          compareStep.selectedIndex = { array: "left", index: leftPtr };
+          steps.push(compareStep);
+          leftPtr++;
+        } else {
+          result.push(right[rightPtr]);
+          compareStep.note += ` Right element is smaller, adding ${right[rightPtr]} to merged array.`;
+          compareStep.selectedIndex = { array: "right", index: rightPtr };
+          steps.push(compareStep);
+          rightPtr++;
+        }
+        
+        // Show the updated merged array
+        steps.push({
+          phase: "Merge (Update)",
+          note: `Updated merged array: [${result}].`,
+          mainArray: originalArr.slice(),
+          subArrays: [
+            {
+              label: `Left sorted sub-array (indices ${leftIdx}-${midIdx})`,
+              array: left,
+              type: "left"
+            },
+            {
+              label: `Right sorted sub-array (indices ${midIdx+1}-${rightIdx})`,
+              array: right,
+              type: "right"
+            },
+            {
+              label: "Merged array (so far)",
+              array: result.slice(),
+              type: "merged"
+            }
+          ],
+          treeState: treeState,
+          activeTreeNode: { level, position }
+        });
+      }
+      
+      // Add remaining elements from left array
+      while (leftPtr < left.length) {
+        steps.push({
+          phase: "Merge (Remaining Left)",
+          note: `Adding remaining left element ${left[leftPtr]} to merged array.`,
+          mainArray: originalArr.slice(),
+          subArrays: [
+            {
+              label: `Left sorted sub-array (indices ${leftIdx}-${midIdx})`,
+              array: left,
+              type: "left",
+              compareIndex: leftPtr
+            },
+            {
+              label: `Right sorted sub-array (indices ${midIdx+1}-${rightIdx})`,
+              array: right,
+              type: "right"
+            },
+            {
+              label: "Merged array (so far)",
+              array: result.slice(),
+              type: "merged"
+            }
+          ],
+          treeState: treeState,
+          activeTreeNode: { level, position },
+          selectedIndex: { array: "left", index: leftPtr }
+        });
+        
+        result.push(left[leftPtr]);
+        leftPtr++;
+        
+        // Show the updated merged array
+        steps.push({
+          phase: "Merge (Update)",
+          note: `Updated merged array: [${result}].`,
+          mainArray: originalArr.slice(),
+          subArrays: [
+            {
+              label: `Left sorted sub-array (indices ${leftIdx}-${midIdx})`,
+              array: left,
+              type: "left"
+            },
+            {
+              label: `Right sorted sub-array (indices ${midIdx+1}-${rightIdx})`,
+              array: right,
+              type: "right"
+            },
+            {
+              label: "Merged array (so far)",
+              array: result.slice(),
+              type: "merged"
+            }
+          ],
+          treeState: treeState,
+          activeTreeNode: { level, position }
+        });
+      }
+      
+      // Add remaining elements from right array
+      while (rightPtr < right.length) {
+        steps.push({
+          phase: "Merge (Remaining Right)",
+          note: `Adding remaining right element ${right[rightPtr]} to merged array.`,
+          mainArray: originalArr.slice(),
+          subArrays: [
+            {
+              label: `Left sorted sub-array (indices ${leftIdx}-${midIdx})`,
+              array: left,
+              type: "left"
+            },
+            {
+              label: `Right sorted sub-array (indices ${midIdx+1}-${rightIdx})`,
+              array: right,
+              type: "right",
+              compareIndex: rightPtr
+            },
+            {
+              label: "Merged array (so far)",
+              array: result.slice(),
+              type: "merged"
+            }
+          ],
+          treeState: treeState,
+          activeTreeNode: { level, position },
+          selectedIndex: { array: "right", index: rightPtr }
+        });
+        
+        result.push(right[rightPtr]);
+        rightPtr++;
+        
+        // Show the updated merged array
+        steps.push({
+          phase: "Merge (Update)",
+          note: `Updated merged array: [${result}].`,
+          mainArray: originalArr.slice(),
+          subArrays: [
+            {
+              label: `Left sorted sub-array (indices ${leftIdx}-${midIdx})`,
+              array: left,
+              type: "left"
+            },
+            {
+              label: `Right sorted sub-array (indices ${midIdx+1}-${rightIdx})`,
+              array: right,
+              type: "right"
+            },
+            {
+              label: "Merged array (so far)",
+              array: result.slice(),
+              type: "merged"
+            }
+          ],
+          treeState: treeState,
+          activeTreeNode: { level, position }
+        });
+      }
+      
+      // Final merged array
+      const updatedTreeState = updateTreeState(treeState, level, position, result, true);
+      
+      steps.push({
+        phase: "Merge Complete",
+        note: `Completed merging sub-arrays into [${result}].`,
+        mainArray: originalArr.slice(),
+        subArrays: [{
+          label: `Merged sub-array (indices ${leftIdx}-${rightIdx})`,
+          array: result,
+          type: "merged"
+        }],
+        treeState: updatedTreeState,
+        activeTreeNode: { level, position }
+      });
+      
+      return result;
+    }
+    
+    /**
+     * Renders all steps as separate blocks on the page
+     */
+    function renderAllSteps(steps) {
+      const container = document.getElementById("steps-container");
+      // Clear the container before rendering new steps
+      container.innerHTML = "";
+      
+      steps.forEach((step, index) => {
+        // Update phase indicator for the current step
+        if (index === steps.length - 1) {
+          document.getElementById("phase-indicator").textContent = `Phase: ${step.phase}`;
+        }
+        
+        const stepBlock = document.createElement("div");
+        stepBlock.className = "step-block";
+        
+        // Step description
+        const stepTitle = document.createElement("div");
+        stepTitle.className = "step-title";
+        stepTitle.textContent = `Step ${index + 1} (${step.phase}): ${step.note}`;
+        stepBlock.appendChild(stepTitle);
+        
+        const visualizationsDiv = document.createElement("div");
+        visualizationsDiv.className = "visualizations";
+        
+        // Render main array
+        if (step.mainArray && !step.isFinalSorted) {
+          const mainArrayTitle = document.createElement("div");
+          mainArrayTitle.className = "visualization-title";
+          mainArrayTitle.textContent = "Main Array (Current State):";
+          visualizationsDiv.appendChild(mainArrayTitle);
+          
+          const arrayRow = document.createElement("div");
+          arrayRow.className = "array-row";
+          
+          step.mainArray.forEach((val, idx) => {
+            const box = document.createElement("div");
+            box.classList.add("box", "main-array");
+            box.textContent = val;
+            arrayRow.appendChild(box);
+          });
+          
+          visualizationsDiv.appendChild(arrayRow);
+        }
+        
+        // Render sub-arrays for current step
+        if (step.subArrays && step.subArrays.length > 0) {
+          const subArraysTitle = document.createElement("div");
+          subArraysTitle.className = "visualization-title";
+          subArraysTitle.textContent = step.isFinalSorted ? "Final Sorted Array:" : "Current Sub-Arrays:";
+          visualizationsDiv.appendChild(subArraysTitle);
+          
+          const subArraysContainer = document.createElement("div");
+          subArraysContainer.className = "sub-array-container";
+          
+          step.subArrays.forEach(subArray => {
+            // Sub-array label
+            const subArrayLabel = document.createElement("div");
+            subArrayLabel.className = "sub-array-label";
+            subArrayLabel.textContent = subArray.label;
+            subArraysContainer.appendChild(subArrayLabel);
+            
+            // Sub-array visualization
+            const subArrayRow = document.createElement("div");
+            subArrayRow.className = "sub-array-row";
+            
+            subArray.array.forEach((val, idx) => {
+              const box = document.createElement("div");
+              box.classList.add("box");
+              
+              // Add appropriate class based on array type
+              if (step.isFinalSorted) {
+                box.classList.add("sorted");
+              } else if (subArray.type === "left") {
+                box.classList.add("left-array");
+                // Highlight if comparing
+                if (step.compareIndices && step.compareIndices.left === idx) {
+                  box.classList.add("compare-left");
+                }
+                // Highlight if selected
+                if (step.selectedIndex && step.selectedIndex.array === "left" && step.selectedIndex.index === idx) {
+                  box.classList.add("selected-element");
+                }
+              } else if (subArray.type === "right") {
+                box.classList.add("right-array");
+                // Highlight if comparing
+                if (step.compareIndices && step.compareIndices.right === idx) {
+                  box.classList.add("compare-right");
+                }
+                // Highlight if selected
+                if (step.selectedIndex && step.selectedIndex.array === "right" && step.selectedIndex.index === idx) {
+                  box.classList.add("selected-element");
+                }
+              } else if (subArray.type === "merged") {
+                box.classList.add("merged-array");
+              } else {
+                box.classList.add("main-array");
+              }
+              
+              // Add comparison highlight if needed
+              if (subArray.compareIndex === idx) {
+                if (subArray.type === "left") {
+                  box.classList.add("compare-left");
+                } else if (subArray.type === "right") {
+                  box.classList.add("compare-right");
+                }
+              }
+              
+              box.textContent = val;
+              subArrayRow.appendChild(box);
+            });
+            
+            subArraysContainer.appendChild(subArrayRow);
+          });
+          
+          visualizationsDiv.appendChild(subArraysContainer);
+        }
+        
+        // Render recursion tree visualization
+        if (step.treeState && step.treeState.length > 0) {
+          const treeTitle = document.createElement("div");
+          treeTitle.className = "visualization-title";
+          treeTitle.textContent = "Recursion Tree:";
+          visualizationsDiv.appendChild(treeTitle);
+          
+          const mergeTreeContainer = document.createElement("div");
+          mergeTreeContainer.className = "merge-tree-container";
+          
+          // Render each level of the tree
+          step.treeState.forEach((level, levelIndex) => {
+            if (level.length === 0) return;
+            
+            const treeLevel = document.createElement("div");
+            treeLevel.className = "tree-level";
+            
+            // Render connectors from parent to children
+            if (levelIndex > 0) {
+              const connectorsContainer = document.createElement("div");
+              connectorsContainer.className = "connectors-container";
+              
+              // Calculate and draw connectors
+              level.forEach((node, nodeIndex) => {
+                if (!node) return;
+                
+                // Find parent position (in previous level)
+                const parentIndex = Math.floor(nodeIndex / 2);
+                if (step.treeState[levelIndex - 1][parentIndex]) {
+                  // Calculate positions (approximately)
+                  const parentPosition = parentIndex * 100 + 50;  // Simplified positioning
+                  const currentPosition = nodeIndex * 100 + 50;   // Simplified positioning
+                  
+                  const connector = document.createElement("div");
+                  connector.className = "connector";
+                  // Set left position and width based on positions
+                  connector.style.left = `${Math.min(parentPosition, currentPosition)}px`;
+                  connector.style.width = `${Math.abs(currentPosition - parentPosition) || 2}px`;
+                  connectorsContainer.appendChild(connector);
+                }
+              });
+              mergeTreeContainer.appendChild(connectorsContainer);
+            }
+            
+            // Render tree nodes for this level
+            level.forEach((node, nodeIndex) => {
+              if (!node) return;
+              const treeNode = document.createElement("div");
+              treeNode.className = "tree-node";
+              if (node.active) {
+                treeNode.classList.add("active");
+              }
+              const nodeLabel = document.createElement("div");
+              nodeLabel.className = "tree-node-label";
+              nodeLabel.textContent = node.label;
+              treeNode.appendChild(nodeLabel);
+              
+              const nodeContent = document.createElement("div");
+              nodeContent.className = "tree-node-content";
+              node.array.forEach(value => {
+                const valueBox = document.createElement("div");
+                valueBox.className = "tree-node-value";
+                valueBox.textContent = value;
+                nodeContent.appendChild(valueBox);
+              });
+              treeNode.appendChild(nodeContent);
+              treeLevel.appendChild(treeNode);
+            });
+            
+            mergeTreeContainer.appendChild(treeLevel);
+          });
+          
+          visualizationsDiv.appendChild(mergeTreeContainer);
+        }
+        
+        stepBlock.appendChild(visualizationsDiv);
+        container.appendChild(stepBlock);
+      });
+    }
+    
+    /**
+     * Starts the visualization by generating a random array, processing the steps, and rendering them.
+     */
+    function startVisualization() {
+      const randomArray = generateRandomArray(10, 1, 99);
+      const steps = mergesortSteps(randomArray);
+      renderAllSteps(steps);
+    }
+    
+    document.getElementById("refresh-btn").addEventListener("click", startVisualization);
+    
+    // Initial visualization
+    startVisualization();
+  </script>
+</body>
+</html>

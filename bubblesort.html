@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>BubbleSort: Algorithm & Visualization</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      line-height: 1.6;
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    pre {
+      background-color: #f8f8f8;
+      border: 1px solid #ccc;
+      padding: 10px;
+      overflow-x: auto;
+    }
+    /* Container for the step-by-step visualization */
+    #steps-container {
+      max-width: 950px;
+      margin: 20px auto;
+      text-align: left;
+    }
+    .step-block {
+      margin-bottom: 40px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .step-title {
+      font-weight: bold;
+      font-size: 18px;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eee;
+    }
+    .array-row {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      margin: 15px 0;
+    }
+    .box {
+      width: 50px;
+      height: 50px;
+      border: 1px solid #999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 16px;
+      color: #000;
+    }
+    /* Color codes */
+    .unsorted {
+      background-color: #b3e0f2;
+    }
+    .sorted {
+      background-color: #9370DB;
+      color: #fff;
+    }
+    .comparing-left {
+      background-color: #ffcc99;
+      border: 2px solid #ff9933;
+    }
+    .comparing-right {
+      background-color: #ffb3e6;
+      border: 2px solid #ff66cc;
+    }
+    .swapping {
+      background-color: #33cc33;
+      color: #fff;
+    }
+    .no-swap {
+      border: 2px dashed #999;
+    }
+    
+    /* Legend */
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin: 20px auto;
+      justify-content: center;
+      padding: 10px;
+      background-color: #f8f8f8;
+      border-radius: 8px;
+      max-width: 850px;
+    }
+    
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .legend-color {
+      width: 20px;
+      height: 20px;
+      border: 1px solid #999;
+    }
+    
+    .algorithm-explanation {
+      background-color: #f9f9f9;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 20px auto;
+      max-width: 800px;
+    }
+
+    /* Control section styles */
+    .control-section {
+      text-align: center;
+      margin: 20px 0;
+    }
+    
+    .refresh-button {
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 0 10px;
+      transition: background-color 0.3s;
+    }
+    
+    .refresh-button:hover {
+      background-color: #45a049;
+    }
+
+    /* Phase indicator */
+    .phase-indicator {
+      background-color: #f0f0f0;
+      border-radius: 4px;
+      padding: 10px;
+      margin: 10px auto;
+      max-width: 800px;
+      text-align: center;
+      font-weight: bold;
+    }
+    
+    /* Index indicators */
+    .index-indicators {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      margin: 5px 0 15px 0;
+    }
+    .index-box {
+      width: 50px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      border-bottom: 1px solid #999;
+    }
+  </style>
+</head>
+<body>
+  <h1>BubbleSort: Algorithm & Visualization</h1>
+  
+  <div class="algorithm-explanation">
+    <h2>Algorithm Explanation</h2>
+    <p>
+      <strong>BubbleSort</strong> is a simple comparison-based sorting algorithm that works as follows:
+    </p>
+    <ol>
+      <li>Start at the beginning of the array.</li>
+      <li>Compare adjacent elements. If the first is greater than the second, swap them.</li>
+      <li>Move to the next pair of adjacent elements and repeat the comparison and swap if needed.</li>
+      <li>After reaching the end of the array, the largest element will have "bubbled up" to the last position.</li>
+      <li>Repeat the process for the rest of the array (excluding the last element which is now in its final position).</li>
+      <li>Continue this process until no swaps are needed (the array is sorted).</li>
+    </ol>
+    <p>Time Complexity: O(n²) in worst and average cases, O(n) in best case (already sorted). Space Complexity: O(1).</p>
+  </div>
+  
+  <div class="control-section">
+    <button id="refresh-btn" class="refresh-button">Generate New Random Array</button>
+  </div>
+  
+  <div class="phase-indicator" id="phase-indicator">
+    Phase: Initializing...
+  </div>
+  
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-color unsorted"></div>
+      <span>Unsorted Element</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color sorted"></div>
+      <span>Sorted Element</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color comparing-left"></div>
+      <span>Left Element (Comparing)</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color comparing-right"></div>
+      <span>Right Element (Comparing)</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color swapping"></div>
+      <span>Swapping Elements</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color no-swap" style="border: 2px dashed #999; background-color: transparent;"></div>
+      <span>No Swap Needed</span>
+    </div>
+  </div>
+  
+  <div id="steps-container"></div>
+  
+  <script>
+    /**
+     * Generate a random array of integers
+     * @param {number} size - Size of the array
+     * @param {number} min - Minimum value (inclusive)
+     * @param {number} max - Maximum value (inclusive)
+     * @returns {Array} - Random array of integers
+     */
+    function generateRandomArray(size, min, max) {
+      const array = [];
+      for (let i = 0; i < size; i++) {
+        array.push(Math.floor(Math.random() * (max - min + 1)) + min);
+      }
+      return array;
+    }
+    
+    /**
+     * Performs bubble sort on the given array and records all steps
+     * @param {Array} arr - The array to sort
+     * @returns {Array} - Array of step objects describing the sorting process
+     */
+    function bubbleSortSteps(arr) {
+      const steps = [];
+      const arrCopy = arr.slice();
+      
+      // Initial state
+      steps.push({
+        phase: "Initial Array",
+        note: "Starting with the unsorted array.",
+        array: arrCopy.slice(),
+        sortedIndex: arrCopy.length, // Initially no elements are sorted
+        comparingIndices: null,
+        isSwapping: false,
+        noSwap: false
+      });
+      
+      let swapped;
+      let sortedCount = 0;
+      
+      // Bubble sort algorithm with step recording
+      do {
+        swapped = false;
+        
+        // Record start of a new pass
+        steps.push({
+          phase: "Start Pass",
+          note: `Starting pass ${steps.length === 1 ? 1 : steps[steps.length - 1].passNumber + 1}.`,
+          array: arrCopy.slice(),
+          sortedIndex: arrCopy.length - sortedCount,
+          comparingIndices: null,
+          isSwapping: false,
+          noSwap: false,
+          passNumber: steps.length === 1 ? 1 : steps[steps.length - 1].passNumber + 1
+        });
+        
+        for (let i = 0; i < arrCopy.length - 1 - sortedCount; i++) {
+          // Record comparison step
+          steps.push({
+            phase: "Compare",
+            note: `Comparing elements at indices ${i} (${arrCopy[i]}) and ${i+1} (${arrCopy[i+1]}).`,
+            array: arrCopy.slice(),
+            sortedIndex: arrCopy.length - sortedCount,
+            comparingIndices: [i, i+1],
+            isSwapping: false,
+            noSwap: false,
+            passNumber: steps[steps.length - 1].passNumber
+          });
+          
+          if (arrCopy[i] > arrCopy[i+1]) {
+            // Record before swap
+            steps.push({
+              phase: "Before Swap",
+              note: `${arrCopy[i]} > ${arrCopy[i+1]}, so swapping elements at indices ${i} and ${i+1}.`,
+              array: arrCopy.slice(),
+              sortedIndex: arrCopy.length - sortedCount,
+              comparingIndices: [i, i+1],
+              isSwapping: true,
+              noSwap: false,
+              passNumber: steps[steps.length - 1].passNumber
+            });
+            
+            // Swap elements
+            [arrCopy[i], arrCopy[i+1]] = [arrCopy[i+1], arrCopy[i]];
+            swapped = true;
+            
+            // Record after swap
+            steps.push({
+              phase: "After Swap",
+              note: `Swapped elements: placed ${arrCopy[i]} at index ${i} and ${arrCopy[i+1]} at index ${i+1}.`,
+              array: arrCopy.slice(),
+              sortedIndex: arrCopy.length - sortedCount,
+              comparingIndices: [i, i+1],
+              isSwapping: false,
+              noSwap: false,
+              passNumber: steps[steps.length - 1].passNumber
+            });
+          } else {
+            // Record no swap needed
+            steps.push({
+              phase: "No Swap",
+              note: `${arrCopy[i]} <= ${arrCopy[i+1]}, so no swap needed.`,
+              array: arrCopy.slice(),
+              sortedIndex: arrCopy.length - sortedCount,
+              comparingIndices: [i, i+1],
+              isSwapping: false,
+              noSwap: true,
+              passNumber: steps[steps.length - 1].passNumber
+            });
+          }
+        }
+        
+        // After each pass, one more element is in its final position
+        sortedCount++;
+        
+        // Record end of pass
+        steps.push({
+          phase: "End Pass",
+          note: `Completed pass ${steps[steps.length - 1].passNumber}. The largest element in the unsorted portion has bubbled up to position ${arrCopy.length - sortedCount}.`,
+          array: arrCopy.slice(),
+          sortedIndex: arrCopy.length - sortedCount,
+          comparingIndices: null,
+          isSwapping: false,
+          noSwap: false,
+          passNumber: steps[steps.length - 1].passNumber
+        });
+        
+      } while (swapped);
+      
+      // If we exit the loop early (already sorted)
+      if (sortedCount < arrCopy.length) {
+        steps.push({
+          phase: "Early Termination",
+          note: "No swaps performed in the last pass. The array is now sorted.",
+          array: arrCopy.slice(),
+          sortedIndex: 0, // All elements are sorted
+          comparingIndices: null,
+          isSwapping: false,
+          noSwap: false,
+          passNumber: steps[steps.length - 1].passNumber
+        });
+      }
+      
+      // Final state
+      steps.push({
+        phase: "Final Sorted Array",
+        note: "The array is now fully sorted.",
+        array: arrCopy.slice(),
+        sortedIndex: 0, // All elements are sorted
+        comparingIndices: null,
+        isSwapping: false,
+        noSwap: false,
+        passNumber: steps[steps.length - 1].passNumber
+      });
+      
+      return steps;
+    }
+    
+    /**
+     * Renders all steps as separate blocks on the page
+     */
+    function renderAllSteps(steps) {
+      const container = document.getElementById("steps-container");
+      // Clear the container before rendering new steps
+      container.innerHTML = "";
+      
+      steps.forEach((step, index) => {
+        // Update phase indicator for the current step
+        if (index === steps.length - 1) {
+          document.getElementById("phase-indicator").textContent = `Phase: ${step.phase}`;
+        }
+        
+        const stepBlock = document.createElement("div");
+        stepBlock.className = "step-block";
+        
+        // Step description
+        const stepTitle = document.createElement("div");
+        stepTitle.className = "step-title";
+        let stepNumberText = `Step ${index + 1}`;
+        if (step.passNumber) {
+          stepNumberText += ` (Pass ${step.passNumber}, ${step.phase})`;
+        } else {
+          stepNumberText += ` (${step.phase})`;
+        }
+        stepTitle.textContent = `${stepNumberText}: ${step.note}`;
+        stepBlock.appendChild(stepTitle);
+        
+        // Index indicators
+        const indexIndicators = document.createElement("div");
+        indexIndicators.className = "index-indicators";
+        
+        for (let i = 0; i < step.array.length; i++) {
+          const indexBox = document.createElement("div");
+          indexBox.className = "index-box";
+          indexBox.textContent = i;
+          indexIndicators.appendChild(indexBox);
+        }
+        
+        stepBlock.appendChild(indexIndicators);
+        
+        // Array visualization
+        const arrayRow = document.createElement("div");
+        arrayRow.className = "array-row";
+        
+        step.array.forEach((val, idx) => {
+          const box = document.createElement("div");
+          box.className = "box";
+          box.textContent = val;
+          
+          // Apply appropriate styling based on the current step
+          if (idx >= step.sortedIndex) {
+            box.classList.add("sorted");
+          } else {
+            box.classList.add("unsorted");
+          }
+          
+          if (step.comparingIndices && step.comparingIndices.includes(idx)) {
+            if (idx === step.comparingIndices[0]) {
+              box.classList.add("comparing-left");
+            } else {
+              box.classList.add("comparing-right");
+            }
+          }
+          
+          if (step.isSwapping && step.comparingIndices && step.comparingIndices.includes(idx)) {
+            box.classList.add("swapping");
+          }
+          
+          if (step.noSwap && step.comparingIndices && step.comparingIndices.includes(idx)) {
+            box.classList.add("no-swap");
+          }
+          
+          arrayRow.appendChild(box);
+        });
+        
+        stepBlock.appendChild(arrayRow);
+        container.appendChild(stepBlock);
+      });
+    }
+    
+    /**
+     * Starts the visualization by generating a random array, processing the steps, and rendering them.
+     */
+    function startVisualization() {
+      const randomArray = generateRandomArray(10, 1, 99);
+      const steps = bubbleSortSteps(randomArray);
+      renderAllSteps(steps);
+    }
+    
+    document.getElementById("refresh-btn").addEventListener("click", startVisualization);
+    
+    // Initial visualization
+    startVisualization();
+  </script>
+</body>
+</html>

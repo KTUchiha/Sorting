@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>QuickSort: Algorithm & Visualization</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      line-height: 1.6;
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    pre {
+      background-color: #f8f8f8;
+      border: 1px solid #ccc;
+      padding: 10px;
+      overflow-x: auto;
+    }
+    /* Container for the step-by-step visualization */
+    #steps-container {
+      max-width: 950px;
+      margin: 20px auto;
+      text-align: left;
+    }
+    .step-block {
+      margin-bottom: 40px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .step-title {
+      font-weight: bold;
+      font-size: 18px;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eee;
+    }
+    .array-row {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      margin: 15px 0;
+    }
+    .sub-array-container {
+      margin-bottom: 15px;
+    }
+    .sub-array-row {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      margin: 5px 0;
+    }
+    .sub-array-label {
+      font-weight: bold;
+      margin-top: 10px;
+      text-align: center;
+    }
+    .box {
+      width: 50px;
+      height: 50px;
+      border: 1px solid #999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 16px;
+      color: #000;
+    }
+    /* Color codes */
+    .inactive {
+      background-color: #e0e0e0;
+      color: #777;
+    }
+    .active {
+      background-color: #b3e0f2;
+    }
+    .pivot {
+      background-color: #ffcc99;
+      border: 2px solid #ff9933;
+    }
+    .less-than {
+      background-color: #c2f0c2;
+      border: 2px solid #33cc33;
+    }
+    .greater-than {
+      background-color: #ffb3e6;
+      border: 2px solid #ff66cc;
+    }
+    .comparing {
+      background-color: #fff2cc;
+      border: 2px solid #ffdb4d;
+    }
+    .swapping {
+      background-color: #b19cd9;
+      color: #fff;
+      border: 2px solid #8a2be2;
+    }
+    .partition-boundary {
+      background-color: #ff9999;
+      border: 2px solid #ff3333;
+    }
+    .sorted {
+      background-color: #9370DB;
+      color: #fff;
+    }
+    
+    /* Legend */
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin: 20px auto;
+      justify-content: center;
+      padding: 10px;
+      background-color: #f8f8f8;
+      border-radius: 8px;
+      max-width: 850px;
+    }
+    
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .legend-color {
+      width: 20px;
+      height: 20px;
+      border: 1px solid #999;
+    }
+    
+    .algorithm-explanation {
+      background-color: #f9f9f9;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 20px auto;
+      max-width: 800px;
+    }
+
+    /* Control section styles */
+    .control-section {
+      text-align: center;
+      margin: 20px 0;
+    }
+    
+    .refresh-button {
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 0 10px;
+      transition: background-color 0.3s;
+    }
+    
+    .refresh-button:hover {
+      background-color: #45a049;
+    }
+
+    /* Phase indicator */
+    .phase-indicator {
+      background-color: #f0f0f0;
+      border-radius: 4px;
+      padding: 10px;
+      margin: 10px auto;
+      max-width: 800px;
+      text-align: center;
+      font-weight: bold;
+    }
+    
+    /* Index indicators */
+    .index-indicators {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      margin: 5px 0 15px 0;
+    }
+    .index-box {
+      width: 50px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      border-bottom: 1px solid #999;
+    }
+    
+    /* Recursion visualization */
+    .recursion-tree {
+      margin: 20px auto;
+      padding: 10px;
+      max-width: 900px;
+      background-color: #f8f8f8;
+      border-radius: 8px;
+    }
+    .recursion-tree-title {
+      font-weight: bold;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    .recursion-level {
+      margin-bottom: 15px;
+      padding-left: 20px;
+      border-left: 2px solid #ccc;
+    }
+    .recursion-call {
+      font-family: monospace;
+      margin: 5px 0;
+    }
+    .active-call {
+      color: #4CAF50;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>QuickSort: Algorithm & Visualization</h1>
+  
+  <div class="algorithm-explanation">
+    <h2>Algorithm Explanation</h2>
+    <p>
+      <strong>QuickSort</strong> is an efficient, divide-and-conquer sorting algorithm that works as follows:
+    </p>
+    <ol>
+      <li><strong>Choose a pivot:</strong> Select an element from the array (usually the rightmost element).</li>
+      <li><strong>Partition:</strong> Rearrange the array so elements smaller than the pivot are on the left, and elements greater than the pivot are on the right.</li>
+      <li><strong>Recursively sort:</strong> Apply quicksort to the sub-arrays on the left and right of the pivot.</li>
+    </ol>
+    <p>Time Complexity: O(n log n) on average, O(n²) in worst case. Space Complexity: O(log n) for recursion stack.</p>
+  </div>
+  
+  <div class="control-section">
+    <button id="refresh-btn" class="refresh-button">Generate New Random Array</button>
+  </div>
+  
+  <div class="phase-indicator" id="phase-indicator">
+    Phase: Initializing...
+  </div>
+  
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-color active"></div>
+      <span>Active Sub-array</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color inactive"></div>
+      <span>Inactive Element</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color pivot"></div>
+      <span>Pivot Element</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color less-than"></div>
+      <span>Less Than Pivot</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color greater-than"></div>
+      <span>Greater Than Pivot</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color comparing"></div>
+      <span>Comparing Element</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color swapping"></div>
+      <span>Swapping Elements</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color partition-boundary"></div>
+      <span>Partition Boundary</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color sorted"></div>
+      <span>Sorted Element</span>
+    </div>
+  </div>
+  
+  <div id="steps-container"></div>
+  
+  <script>
+    /**
+     * Generate a random array of integers
+     * @param {number} size - Size of the array
+     * @param {number} min - Minimum value (inclusive)
+     * @param {number} max - Maximum value (inclusive)
+     * @returns {Array} - Random array of integers
+     */
+    function generateRandomArray(size, min, max) {
+      const array = [];
+      for (let i = 0; i < size; i++) {
+        array.push(Math.floor(Math.random() * (max - min + 1)) + min);
+      }
+      return array;
+    }
+    
+    /**
+     * Performs quicksort on the given array and records all steps
+     * @param {Array} arr - The array to sort
+     * @returns {Array} - Array of step objects describing the sorting process
+     */
+    function quickSortSteps(arr) {
+      const steps = [];
+      const arrCopy = arr.slice();
+      
+      // Record initial state
+      steps.push({
+        phase: "Initial Array",
+        note: "Starting with the unsorted array.",
+        array: arrCopy.slice(),
+        activeRange: [0, arrCopy.length - 1],
+        pivotIndex: null,
+        comparingIndex: null,
+        lessGreaterIndices: {
+          less: [],
+          greater: []
+        },
+        partitionBoundary: null,
+        swappingIndices: null,
+        sortedIndices: [],
+        recursionPath: ["quickSort(array, 0, " + (arrCopy.length - 1) + ")"],
+        activeCall: 0
+      });
+      
+      // Perform the quicksort with step recording
+      quickSortWithSteps(arrCopy, 0, arrCopy.length - 1, steps);
+      
+      // Record final state
+      steps.push({
+        phase: "Final Sorted Array",
+        note: "The array is now fully sorted.",
+        array: arrCopy.slice(),
+        activeRange: null,
+        pivotIndex: null,
+        comparingIndex: null,
+        lessGreaterIndices: {
+          less: [],
+          greater: []
+        },
+        partitionBoundary: null,
+        swappingIndices: null,
+        sortedIndices: Array.from({ length: arrCopy.length }, (_, i) => i),
+        recursionPath: steps[steps.length - 1].recursionPath,
+        activeCall: null
+      });
+      
+      return steps;
+    }
+    
+    /**
+     * Helper function to create a deep copy of the recursion path
+     * @param {Array} path - The recursion path to copy
+     * @returns {Array} - Deep copy of the recursion path
+     */
+    function copyRecursionPath(path) {
+      return JSON.parse(JSON.stringify(path));
+    }
+    
+    /**
+     * Recursive quicksort implementation that records steps
+     * @param {Array} arr - The array to sort
+     * @param {number} low - Start index
+     * @param {number} high - End index
+     * @param {Array} steps - Array to record steps
+     * @param {Array} recursionPath - Current recursion path
+     * @param {number} callIndex - Index of the current call in the recursion path
+     */
+    function quickSortWithSteps(arr, low, high, steps, recursionPath = ["quickSort(array, 0, " + (arr.length - 1) + ")"], callIndex = 0) {
+      if (low < high) {
+        // Record the recursive call
+        const currentPath = copyRecursionPath(recursionPath);
+        const currentSubarray = arr.slice(low, high + 1);
+        
+        // Add this call to the recursion path if it's not already there
+        if (callIndex >= currentPath.length) {
+          currentPath.push("quickSort(array, " + low + ", " + high + ")");
+        }
+        
+        // Record start of quicksort for this range
+        steps.push({
+          phase: "Start QuickSort",
+          note: `Starting quicksort on subarray [${currentSubarray}] (indices ${low} to ${high}).`,
+          array: arr.slice(),
+          activeRange: [low, high],
+          pivotIndex: null,
+          comparingIndex: null,
+          lessGreaterIndices: {
+            less: [],
+            greater: []
+          },
+          partitionBoundary: null,
+          swappingIndices: null,
+          sortedIndices: steps.length > 0 ? [...steps[steps.length - 1].sortedIndices] : [],
+          recursionPath: currentPath,
+          activeCall: callIndex
+        });
+        
+        // Choose pivot (last element) for this call
+        const pivotIndex = high;
+        const pivotValue = arr[pivotIndex];
+        
+        // Record pivot selection
+        steps.push({
+          phase: "Choose Pivot",
+          note: `Choosing pivot element at index ${pivotIndex}: ${pivotValue}.`,
+          array: arr.slice(),
+          activeRange: [low, high],
+          pivotIndex: pivotIndex,
+          comparingIndex: null,
+          lessGreaterIndices: {
+            less: [],
+            greater: []
+          },
+          partitionBoundary: null,
+          swappingIndices: null,
+          sortedIndices: steps[steps.length - 1].sortedIndices,
+          recursionPath: currentPath,
+          activeCall: callIndex
+        });
+        
+        // Partition and get pivot's final position
+        const pivotFinalPos = partitionWithSteps(arr, low, high, steps, currentPath, callIndex);
+        
+        // Record that the pivot is now in its final sorted position
+        const updatedSortedIndices = [...steps[steps.length - 1].sortedIndices, pivotFinalPos];
+        steps.push({
+          phase: "Pivot Placed",
+          note: `Pivot ${pivotValue} is now at its final sorted position (index ${pivotFinalPos}).`,
+          array: arr.slice(),
+          activeRange: [low, high],
+          pivotIndex: pivotFinalPos,
+          comparingIndex: null,
+          lessGreaterIndices: {
+            less: [],
+            greater: []
+          },
+          partitionBoundary: null,
+          swappingIndices: null,
+          sortedIndices: updatedSortedIndices,
+          recursionPath: currentPath,
+          activeCall: callIndex
+        });
+        
+        // Record recursive calls
+        const leftPath = copyRecursionPath(currentPath);
+        leftPath.push("quickSort(array, " + low + ", " + (pivotFinalPos - 1) + ")");
+        
+        const rightPath = copyRecursionPath(currentPath);
+        rightPath.push("quickSort(array, " + (pivotFinalPos + 1) + ", " + high + ")");
+        
+        // Record that we're recursively sorting the left subarray
+        if (low < pivotFinalPos - 1) {
+          steps.push({
+            phase: "Recursive Call (Left)",
+            note: `Making recursive call to sort the left sub-array (indices ${low} to ${pivotFinalPos - 1}).`,
+            array: arr.slice(),
+            activeRange: [low, pivotFinalPos - 1],
+            pivotIndex: null,
+            comparingIndex: null,
+            lessGreaterIndices: {
+              less: [],
+              greater: []
+            },
+            partitionBoundary: null,
+            swappingIndices: null,
+            sortedIndices: updatedSortedIndices,
+            recursionPath: leftPath,
+            activeCall: callIndex + 1
+          });
+        } else if (low === pivotFinalPos - 1) {
+          // Single element subarray on the left is already sorted
+          const newSortedIndices = [...updatedSortedIndices, low];
+          steps.push({
+            phase: "Base Case (Left)",
+            note: `Left sub-array has only one element at index ${low}. It's already sorted.`,
+            array: arr.slice(),
+            activeRange: [low, low],
+            pivotIndex: null,
+            comparingIndex: null,
+            lessGreaterIndices: {
+              less: [],
+              greater: []
+            },
+            partitionBoundary: null,
+            swappingIndices: null,
+            sortedIndices: newSortedIndices,
+            recursionPath: leftPath,
+            activeCall: callIndex + 1
+          });
+        } else if (low > pivotFinalPos - 1) {
+          // No elements on the left
+          steps.push({
+            phase: "Empty Subarray (Left)",
+            note: `No elements in the left sub-array.`,
+            array: arr.slice(),
+            activeRange: null,
+            pivotIndex: null,
+            comparingIndex: null,
+            lessGreaterIndices: {
+              less: [],
+              greater: []
+            },
+            partitionBoundary: null,
+            swappingIndices: null,
+            sortedIndices: updatedSortedIndices,
+            recursionPath: leftPath,
+            activeCall: callIndex + 1
+          });
+        }
+        
+        // Recursively sort the left part
+        if (low < pivotFinalPos - 1) {
+          quickSortWithSteps(arr, low, pivotFinalPos - 1, steps, leftPath, callIndex + 1);
+        }
+        
+        // Record that we're recursively sorting the right subarray
+        if (pivotFinalPos + 1 < high) {
+          steps.push({
+            phase: "Recursive Call (Right)",
+            note: `Making recursive call to sort the right sub-array (indices ${pivotFinalPos + 1} to ${high}).`,
+            array: arr.slice(),
+            activeRange: [pivotFinalPos + 1, high],
+            pivotIndex: null,
+            comparingIndex: null,
+            lessGreaterIndices: {
+              less: [],
+              greater: []
+            },
+            partitionBoundary: null,
+            swappingIndices: null,
+            sortedIndices: steps[steps.length - 1].sortedIndices,
+            recursionPath: rightPath,
+            activeCall: callIndex + 1
+          });
+        } else if (pivotFinalPos + 1 === high) {
+          // Single element subarray on the right is already sorted
+          const newSortedIndices = [...steps[steps.length - 1].sortedIndices, high];
+          steps.push({
+            phase: "Base Case (Right)",
+            note: `Right sub-array has only one element at index ${high}. It's already sorted.`,
+            array: arr.slice(),
+            activeRange: [high, high],
+            pivotIndex: null,
+            comparingIndex: null,
+            lessGreaterIndices: {
+              less: [],
+              greater: []
+            },
+            partitionBoundary: null,
+            swappingIndices: null,
+            sortedIndices: newSortedIndices,
+            recursionPath: rightPath,
+            activeCall: callIndex + 1
+          });
+        } else if (pivotFinalPos + 1 > high) {
+          // No elements on the right
+          steps.push({
+            phase: "Empty Subarray (Right)",
+            note: `No elements in the right sub-array.`,
+            array: arr.slice(),
+            activeRange: null,
+            pivotIndex: null,
+            comparingIndex: null,
+            lessGreaterIndices: {
+              less: [],
+              greater: []
+            },
+            partitionBoundary: null,
+            swappingIndices: null,
+            sortedIndices: steps[steps.length - 1].sortedIndices,
+            recursionPath: rightPath,
+            activeCall: callIndex + 1
+          });
+        }
+        
+        // Recursively sort the right part
+        if (pivotFinalPos + 1 < high) {
+          quickSortWithSteps(arr, pivotFinalPos + 1, high, steps, rightPath, callIndex + 1);
+        }
+        
+        // Record completion of this quicksort call
+        steps.push({
+          phase: "Complete QuickSort",
+          note: `Completed quicksort on subarray (indices ${low} to ${high}).`,
+          array: arr.slice(),
+          activeRange: [low, high],
+          pivotIndex: null,
+          comparingIndex: null,
+          lessGreaterIndices: {
+            less: [],
+            greater: []
+          },
+          partitionBoundary: null,
+          swappingIndices: null,
+          sortedIndices: steps[steps.length - 1].sortedIndices,
+          recursionPath: currentPath,
+          activeCall: callIndex
+        });
+      } 
+      else if (low === high) {
+        // Base case: single element is already sorted
+        const currentPath = copyRecursionPath(recursionPath);
+        if (callIndex >= currentPath.length) {
+          currentPath.push("quickSort(array, " + low + ", " + high + ")");
+        }
+        
+        const updatedSortedIndices = [...steps[steps.length - 1].sortedIndices, low];
+        steps.push({
+          phase: "Base Case",
+          note: `Subarray with single element at index ${low} is already sorted.`,
+          array: arr.slice(),
+          activeRange: [low, high],
+          pivotIndex: null,
+          comparingIndex: null,
+          lessGreaterIndices: {
+            less: [],
+            greater: []
+          },
+          partitionBoundary: null,
+          swappingIndices: null,
+          sortedIndices: updatedSortedIndices,
+          recursionPath: currentPath,
+          activeCall: callIndex
+        });
+      }
+    }
+    
+    /**
+     * Partition function that records steps
+     * @param {Array} arr - The array to partition
+     * @param {number} low - Start index
+     * @param {number} high - End index
+     * @param {Array} steps - Array to record steps
+     * @param {Array} recursionPath - Current recursion path
+     * @param {number} callIndex - Index of the current call in the recursion path
+     * @returns {number} - Final position of the pivot
+     */
+    function partitionWithSteps(arr, low, high, steps, recursionPath, callIndex) {
+      const pivotValue = arr[high];
+      let i = low - 1; // Index of smaller element
+      
+      // Record start of partition
+      steps.push({
+        phase: "Start Partition",
+        note: `Starting partition with pivot ${pivotValue}. Will place smaller elements to the left and larger to the right.`,
+        array: arr.slice(),
+        activeRange: [low, high],
+        pivotIndex: high,
+        comparingIndex: null,
+        lessGreaterIndices: {
+          less: [],
+          greater: []
+        },
+        partitionBoundary: i,
+        swappingIndices: null,
+        sortedIndices: steps[steps.length - 1].sortedIndices,
+        recursionPath: recursionPath,
+        activeCall: callIndex
+      });
+      
+      // Record current state of less/greater elements
+      const lessIndices = [];
+      const greaterIndices = [];
+      
+      // Partition process
+      for (let j = low; j < high; j++) {
+        // Record comparison with pivot
+        steps.push({
+          phase: "Compare with Pivot",
+          note: `Comparing element at index ${j} (${arr[j]}) with pivot (${pivotValue}).`,
+          array: arr.slice(),
+          activeRange: [low, high],
+          pivotIndex: high,
+          comparingIndex: j,
+          lessGreaterIndices: {
+            less: [...lessIndices],
+            greater: [...greaterIndices]
+          },
+          partitionBoundary: i,
+          swappingIndices: null,
+          sortedIndices: steps[steps.length - 1].sortedIndices,
+          recursionPath: recursionPath,
+          activeCall: callIndex
+        });
+        
+        // If current element is smaller than pivot
+        if (arr[j] < pivotValue) {
+          i++; // Increment index of smaller element
+          
+          // Record that we've found a smaller element
+          lessIndices.push(j);
+          
+          if (i !== j) {
+            // Record before swap
+            steps.push({
+              phase: "Swap (Less than Pivot)",
+              note: `Element ${arr[j]} is less than pivot. Swapping elements at indices ${i} (${arr[i]}) and ${j} (${arr[j]}).`,
+              array: arr.slice(),
+              activeRange: [low, high],
+              pivotIndex: high,
+              comparingIndex: null,
+              lessGreaterIndices: {
+                less: [...lessIndices],
+                greater: [...greaterIndices]
+              },
+              partitionBoundary: i,
+              swappingIndices: [i, j],
+              sortedIndices: steps[steps.length - 1].sortedIndices,
+              recursionPath: recursionPath,
+              activeCall: callIndex
+            });
+            
+            // Swap arr[i] and arr[j]
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+            
+            // Record after swap
+            steps.push({
+              phase: "After Swap",
+              note: `Swapped elements at indices ${i} and ${j}. All elements up to index ${i} are now less than the pivot.`,
+              array: arr.slice(),
+              activeRange: [low, high],
+              pivotIndex: high,
+              comparingIndex: null,
+              lessGreaterIndices: {
+                less: [...lessIndices],
+                greater: [...greaterIndices]
+              },
+              partitionBoundary: i,
+              swappingIndices: null,
+              sortedIndices: steps[steps.length - 1].sortedIndices,
+              recursionPath: recursionPath,
+              activeCall: callIndex
+            });
+          } else {
+            // Element is already in the correct position
+            steps.push({
+              phase: "Already in Position (Less than Pivot)",
+              note: `Element ${arr[j]} is less than pivot and already in the correct position.`,
+              array: arr.slice(),
+              activeRange: [low, high],
+              pivotIndex: high,
+              comparingIndex: null,
+              lessGreaterIndices: {
+                less: [...lessIndices],
+                greater: [...greaterIndices]
+              },
+              partitionBoundary: i,
+              swappingIndices: null,
+              sortedIndices: steps[steps.length - 1].sortedIndices,
+              recursionPath: recursionPath,
+              activeCall: callIndex
+            });
+          }
+        } else {
+          // Element is greater than pivot
+          greaterIndices.push(j);
+          
+          steps.push({
+            phase: "Greater than Pivot",
+            note: `Element ${arr[j]} is greater than or equal to pivot. Leaving it on the right side.`,
+            array: arr.slice(),
+            activeRange: [low, high],
+            pivotIndex: high,
+            comparingIndex: null,
+            lessGreaterIndices: {
+              less: [...lessIndices],
+              greater: [...greaterIndices]
+            },
+            partitionBoundary: i,
+            swappingIndices: null,
+            sortedIndices: steps[steps.length - 1].sortedIndices,
+            recursionPath: recursionPath,
+            activeCall: callIndex
+          });
+        }
+      }
+      
+      // Place pivot in its final position
+      const pivotFinalPosition = i + 1;
+      
+      // Record before swapping pivot
+      steps.push({
+        phase: "Place Pivot",
+        note: `Placing pivot ${pivotValue} at its final position between smaller and greater elements.`,
+        array: arr.slice(),
+        activeRange: [low, high],
+        pivotIndex: high,
+        comparingIndex: null,
+        lessGreaterIndices: {
+          less: [...lessIndices],
+          greater: [...greaterIndices]
+        },
+        partitionBoundary: i,
+        swappingIndices: [pivotFinalPosition, high],
+        sortedIndices: steps[steps.length - 1].sortedIndices,
+        recursionPath: recursionPath,
+        activeCall: callIndex
+      });
+      
+      // Swap the pivot with the element at pivotFinalPosition
+      [arr[pivotFinalPosition], arr[high]] = [arr[high], arr[pivotFinalPosition]];
+      
+      // Record after placing pivot
+      steps.push({
+        phase: "Partition Complete",
+        note: `Partition complete. Pivot ${pivotValue} is now at index ${pivotFinalPosition}. Elements to the left are smaller, elements to the right are greater.`,
+        array: arr.slice(),
+        activeRange: [low, high],
+        pivotIndex: pivotFinalPosition,
+        comparingIndex: null,
+        lessGreaterIndices: {
+          less: [...lessIndices],
+          greater: [...greaterIndices]
+        },
+        partitionBoundary: null,
+        swappingIndices: null,
+        sortedIndices: steps[steps.length - 1].sortedIndices,
+        recursionPath: recursionPath,
+        activeCall: callIndex
+      });
+      
+      return pivotFinalPosition;
+    }
+    
+    /**
+     * Renders all steps as separate blocks on the page
+     */
+    function renderAllSteps(steps) {
+      const container = document.getElementById("steps-container");
+      // Clear the container before rendering new steps
+      container.innerHTML = "";
+      
+      steps.forEach((step, index) => {
+        // Update phase indicator for the current step
+        if (index === steps.length - 1) {
+          document.getElementById("phase-indicator").textContent = `Phase: ${step.phase}`;
+        }
+        
+        const stepBlock = document.createElement("div");
+        stepBlock.className = "step-block";
+        
+        // Step description
+        const stepTitle = document.createElement("div");
+        stepTitle.className = "step-title";
+        stepTitle.textContent = `Step ${index + 1} (${step.phase}): ${step.note}`;
+        stepBlock.appendChild(stepTitle);
+        
+        // Index indicators
+        const indexIndicators = document.createElement("div");
+        indexIndicators.className = "index-indicators";
+        
+        for (let i = 0; i < step.array.length; i++) {
+          const indexBox = document.createElement("div");
+          indexBox.className = "index-box";
+          indexBox.textContent = i;
+          indexIndicators.appendChild(indexBox);
+        }
+        
+        stepBlock.appendChild(indexIndicators);
+        
+        // Array visualization
+        const arrayRow = document.createElement("div");
+        arrayRow.className = "array-row";
+        
+        step.array.forEach((val, idx) => {
+          const box = document.createElement("div");
+          box.className = "box";
+          box.textContent = val;
+          
+          // Apply appropriate styling based on the current step
+          
+          // 1. Check if sorted
+          if (step.sortedIndices && step.sortedIndices.includes(idx)) {
+            box.classList.add("sorted");
+          }
+          // 2. Check if in active range
+          else if (step.activeRange && idx >= step.activeRange[0] && idx <= step.activeRange[1]) {
+            box.classList.add("active");
+          } 
+          // 3. Inactive element
+          else {
+            box.classList.add("inactive");
+          }
+          
+          // 4. Special states override
+          if (idx === step.pivotIndex) {
+            box.classList.add("pivot");
+          }
+          
+          if (step.lessGreaterIndices) {
+            if (step.lessGreaterIndices.less && step.lessGreaterIndices.less.includes(idx)) {
+              box.classList.add("less-than");
+            }
+            if (step.lessGreaterIndices.greater && step.lessGreaterIndices.greater.includes(idx)) {
+              box.classList.add("greater-than");
+            }
+          }
+          
+          if (idx === step.comparingIndex) {
+            box.classList.add("comparing");
+          }
+          
+          if (step.swappingIndices && step.swappingIndices.includes(idx)) {
+            box.classList.add("swapping");
+          }
+          
+          if (idx === step.partitionBoundary) {
+            box.classList.add("partition-boundary");
+          }
+          
+          arrayRow.appendChild(box);
+        });
+        
+        stepBlock.appendChild(arrayRow);
+        
+        // Render recursion path/tree
+        if (step.recursionPath && step.recursionPath.length > 0) {
+          const recursionTree = document.createElement("div");
+          recursionTree.className = "recursion-tree";
+          
+          const treeTitle = document.createElement("div");
+          treeTitle.className = "recursion-tree-title";
+          treeTitle.textContent = "Recursion Stack:";
+          recursionTree.appendChild(treeTitle);
+          
+          step.recursionPath.forEach((call, callIdx) => {
+            const recursionCall = document.createElement("div");
+            recursionCall.className = "recursion-call";
+            
+            if (step.activeCall === callIdx) {
+              recursionCall.classList.add("active-call");
+            }
+            
+            recursionCall.textContent = call;
+            recursionTree.appendChild(recursionCall);
+          });
+          
+          stepBlock.appendChild(recursionTree);
+        }
+        
+        container.appendChild(stepBlock);
+      });
+    }
+    
+    /**
+     * Starts the visualization by generating a random array, processing the steps, and rendering them.
+     */
+    function startVisualization() {
+      const randomArray = generateRandomArray(8, 1, 99); // Using smaller array size for quicksort for clarity
+      const steps = quickSortSteps(randomArray);
+      renderAllSteps(steps);
+    }
+    
+    document.getElementById("refresh-btn").addEventListener("click", startVisualization);
+    
+    // Initial visualization
+    startVisualization();
+  </script>
+</body>
+</html>

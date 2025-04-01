@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Heapsort: Algorithm & Visualization</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      line-height: 1.6;
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    pre {
+      background-color: #f8f8f8;
+      border: 1px solid #ccc;
+      padding: 10px;
+      overflow-x: auto;
+    }
+    /* Container for the step-by-step visualization */
+    #steps-container {
+      max-width: 950px;
+      margin: 20px auto;
+      text-align: left;
+    }
+    .step-block {
+      margin-bottom: 40px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .step-title {
+      font-weight: bold;
+      font-size: 18px;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eee;
+    }
+    .array-row {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      margin: 15px 0;
+    }
+    .box {
+      width: 50px;
+      height: 50px;
+      border: 1px solid #999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 16px;
+      color: #000;
+    }
+    /* Color codes:
+         - Green: The current node being heapified (i)
+         - Yellow: The left or right child under consideration
+         - Red: The largest element (candidate for swap)
+         - Light Blue: All other elements
+         - Purple: Sorted elements
+         - Orange: Root element being moved
+    */
+    .node {
+      background-color: green;
+      color: #fff;
+    }
+    .child {
+      background-color: yellow;
+    }
+    .largest {
+      background-color: red;
+      color: #fff;
+    }
+    .normal {
+      background-color: #b3e0f2;
+    }
+    .sorted {
+      background-color: #9370DB;
+      color: #fff;
+    }
+    .root-moving {
+      background-color: #FF8C00;
+      color: #fff;
+    }
+    
+    /* Tree visualization styles */
+    .visualizations {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    
+    .visualization-title {
+      font-weight: bold;
+      margin: 15px 0 10px 0;
+    }
+    
+    .tree-container {
+      height: 350px;
+      width: 900px;
+      margin: 0 auto;
+      position: relative;
+      overflow: visible;
+    }
+    
+    .tree-node {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 18px;
+      border: 2px solid #666;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    
+    .tree-edge {
+      position: absolute;
+      height: 2px;
+      background-color: #666;
+      transform-origin: 0 0;
+      z-index: -1;
+    }
+    
+    .node-index {
+      font-size: 12px;
+      margin-top: 2px;
+      color: #555;
+    }
+    
+    /* Legend */
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin: 20px auto;
+      justify-content: center;
+      padding: 10px;
+      background-color: #f8f8f8;
+      border-radius: 8px;
+      max-width: 850px;
+    }
+    
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .legend-color {
+      width: 20px;
+      height: 20px;
+      border: 1px solid #999;
+    }
+    
+    .algorithm-explanation {
+      background-color: #f9f9f9;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 20px auto;
+      max-width: 800px;
+    }
+
+    /* Control section styles */
+    .control-section {
+      text-align: center;
+      margin: 20px 0;
+    }
+    
+    .refresh-button {
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 0 10px;
+      transition: background-color 0.3s;
+    }
+    
+    .refresh-button:hover {
+      background-color: #45a049;
+    }
+
+    /* Phase indicator */
+    .phase-indicator {
+      background-color: #f0f0f0;
+      border-radius: 4px;
+      padding: 10px;
+      margin: 10px auto;
+      max-width: 800px;
+      text-align: center;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Heapsort: Algorithm & Visualization</h1>
+  
+  <div class="algorithm-explanation">
+    <h2>Algorithm Explanation</h2>
+    <p>
+      <strong>Heapsort</strong> is a comparison-based sorting algorithm that uses a binary heap data structure. It works in two main phases:
+    </p>
+    <ol>
+      <li><strong>Phase 1 (Build Max Heap):</strong> Rearrange the array to satisfy the max-heap property where parent nodes are always larger than their children.</li>
+      <li><strong>Phase 2 (Extract Elements):</strong> Repeatedly extract the maximum element (root) from the heap, put it at the end of the array, and restore the heap property with the remaining elements.</li>
+    </ol>
+    <p>Time Complexity: O(n log n) in all cases.</p>
+  </div>
+  
+  <div class="control-section">
+    <button id="refresh-btn" class="refresh-button">Generate New Random Array</button>
+  </div>
+  
+  <div class="phase-indicator" id="phase-indicator">
+    Phase: Initializing...
+  </div>
+  
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-color node"></div>
+      <span>Current node being heapified</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color child"></div>
+      <span>Child node under consideration</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color largest"></div>
+      <span>Largest element (swap candidate)</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color normal"></div>
+      <span>Unsorted element</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color root-moving"></div>
+      <span>Root being moved to sorted section</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color sorted"></div>
+      <span>Sorted element</span>
+    </div>
+  </div>
+  
+  <div id="steps-container"></div>
+  
+  <script>
+    /**
+     * Generate a random array of integers
+     * @param {number} size - Size of the array
+     * @param {number} min - Minimum value (inclusive)
+     * @param {number} max - Maximum value (inclusive)
+     * @returns {Array} - Random array of integers
+     */
+    function generateRandomArray(size, min, max) {
+      const array = [];
+      for (let i = 0; i < size; i++) {
+        array.push(Math.floor(Math.random() * (max - min + 1)) + min);
+      }
+      return array;
+    }
+    
+    /**
+     * Performs heapsort on the given array and records all steps
+     * @param {Array} arr - The array to sort
+     * @returns {Array} - Array of step objects describing the sorting process
+     */
+    function heapsortSteps(arr) {
+      const steps = [];
+      const n = arr.length;
+      
+      // Record initial array state
+      steps.push({
+        array: arr.slice(),
+        i: -1,
+        left: -1,
+        right: -1,
+        largest: -1,
+        sorted: [],
+        rootMoving: -1,
+        phase: "Initial array before sorting",
+        note: "Initial unsorted array."
+      });
+      
+      // Phase 1: Build max heap
+      steps.push({
+        array: arr.slice(),
+        i: -1,
+        left: -1,
+        right: -1,
+        largest: -1,
+        sorted: [],
+        rootMoving: -1,
+        phase: "Phase 1: Building Max Heap",
+        note: "Starting Phase 1: Build max heap from the array."
+      });
+      
+      // Build the max heap
+      for (let i = Math.floor(n / 2) - 1; i >= 0; i--) {
+        heapifySteps(arr, n, i, steps, []);
+      }
+      
+      // Record state after building the heap
+      steps.push({
+        array: arr.slice(),
+        i: -1,
+        left: -1,
+        right: -1,
+        largest: -1,
+        sorted: [],
+        rootMoving: -1,
+        phase: "Phase 1: Building Max Heap",
+        note: "Max heap has been built. The largest element is now at the root (index 0)."
+      });
+      
+      // Phase 2: Extract elements from heap
+      steps.push({
+        array: arr.slice(),
+        i: -1,
+        left: -1,
+        right: -1,
+        largest: -1,
+        sorted: [],
+        rootMoving: -1,
+        phase: "Phase 2: Extracting Elements",
+        note: "Starting Phase 2: Extract elements one by one from the heap."
+      });
+      
+      // Keep track of sorted indices
+      const sortedIndices = [];
+      
+      // One by one extract elements from the heap
+      for (let i = n - 1; i > 0; i--) {
+        // Show root element being moved
+        steps.push({
+          array: arr.slice(),
+          i: -1,
+          left: -1,
+          right: -1,
+          largest: -1,
+          sorted: sortedIndices.slice(),
+          rootMoving: 0,
+          phase: "Phase 2: Extracting Elements",
+          note: `Moving largest element (${arr[0]}) from root to position ${i}.`
+        });
+        
+        // Move current root to end
+        [arr[0], arr[i]] = [arr[i], arr[0]];
+        
+        // Add the new index to the sorted portion
+        sortedIndices.push(i);
+        
+        // Show state after swap
+        steps.push({
+          array: arr.slice(),
+          i: -1,
+          left: -1,
+          right: -1,
+          largest: -1,
+          sorted: sortedIndices.slice(),
+          rootMoving: -1,
+          phase: "Phase 2: Extracting Elements",
+          note: `Placed ${arr[i]} at final sorted position ${i}. Now heapify the remaining heap.`
+        });
+        
+        // Call heapify on the reduced heap
+        heapifySteps(arr, i, 0, steps, sortedIndices);
+      }
+      
+      // Add the first element to sorted portion
+      sortedIndices.push(0);
+      
+      // Final sorted array
+      steps.push({
+        array: arr.slice(),
+        i: -1,
+        left: -1,
+        right: -1,
+        largest: -1,
+        sorted: sortedIndices,
+        rootMoving: -1,
+        phase: "Complete",
+        note: "Heapsort complete. The array is now sorted in ascending order."
+      });
+      
+      return steps;
+    }
+    
+    /**
+     * heapifySteps(arr, n, i, steps, sortedIndices):
+     * Ensures the subtree with root at index i is a valid max heap,
+     * assuming subtrees below have already been heapified.
+     *
+     * Parameters:
+     *   - arr: the array to heapify.
+     *   - n: size of the heap region in arr.
+     *   - i: current root index to heapify.
+     *   - steps: array to record each step.
+     *   - sortedIndices: indices of elements that are already sorted.
+     */
+    function heapifySteps(arr, n, i, steps, sortedIndices) {
+      let largest = i;       // Initialize largest as root.
+      const left = 2 * i + 1; 
+      const right = 2 * i + 2;
+      
+      // Record the start of a heapify call.
+      const phase = sortedIndices.length > 0 ? "Phase 2: Extracting Elements" : "Phase 1: Building Max Heap";
+      steps.push({
+        array: arr.slice(),
+        i: i,
+        left: left < n ? left : -1,
+        right: right < n ? right : -1,
+        largest: largest,
+        sorted: sortedIndices.slice(),
+        rootMoving: -1,
+        phase: phase,
+        note: `Heapify called on index ${i}. Left child = ${left < n ? left : 'N/A'}, right child = ${right < n ? right : 'N/A'}.`
+      });
+      
+      // If left child is larger than root.
+      if (left < n && arr[left] > arr[largest]) {
+        largest = left;
+        steps.push({
+          array: arr.slice(),
+          i: i,
+          left: left,
+          right: right < n ? right : -1,
+          largest: largest,
+          sorted: sortedIndices.slice(),
+          rootMoving: -1,
+          phase: phase,
+          note: `Left child arr[${left}] (${arr[left]}) is larger than arr[${i}] (${arr[i]}). largest = ${left}.`
+        });
+      }
+      
+      // If right child is larger than the largest so far.
+      if (right < n && arr[right] > arr[largest]) {
+        const oldLargest = largest;
+        largest = right;
+        steps.push({
+          array: arr.slice(),
+          i: i,
+          left: left < n ? left : -1,
+          right: right,
+          largest: largest,
+          sorted: sortedIndices.slice(),
+          rootMoving: -1,
+          phase: phase,
+          note: `Right child arr[${right}] (${arr[right]}) is larger than arr[${oldLargest}] (${arr[oldLargest]}). largest = ${right}.`
+        });
+      }
+      
+      // If largest is not root, swap and continue heapifying.
+      if (largest !== i) {
+        steps.push({
+          array: arr.slice(),
+          i: i,
+          left: left < n ? left : -1,
+          right: right < n ? right : -1,
+          largest: largest,
+          sorted: sortedIndices.slice(),
+          rootMoving: -1,
+          phase: phase,
+          note: `Swapping arr[${i}] (${arr[i]}) with arr[${largest}] (${arr[largest]}).`
+        });
+      
+        [arr[i], arr[largest]] = [arr[largest], arr[i]];
+      
+        steps.push({
+          array: arr.slice(),
+          i: i,
+          left: left < n ? left : -1,
+          right: right < n ? right : -1,
+          largest: largest,
+          sorted: sortedIndices.slice(),
+          rootMoving: -1,
+          phase: phase,
+          note: `After swap: [${arr.join(", ")}]. Now heapify subtree at index ${largest}.`
+        });
+      
+        // Recursively heapify the affected subtree.
+        heapifySteps(arr, n, largest, steps, sortedIndices);
+      } else {
+        steps.push({
+          array: arr.slice(),
+          i: i,
+          left: left < n ? left : -1,
+          right: right < n ? right : -1,
+          largest: largest,
+          sorted: sortedIndices.slice(),
+          rootMoving: -1,
+          phase: phase,
+          note: `No swap needed at index ${i}. Subtree is already a max heap.`
+        });
+      }
+    }
+    
+    /**
+     * Calculate positions for a balanced tree visualization
+     */
+    function calculateBalancedTreePositions(nodeCount, containerWidth, containerHeight) {
+      const positions = [];
+      const height = Math.floor(Math.log2(nodeCount)) + 1; // Tree height
+      const levelHeight = containerHeight / height;
+      
+      for (let i = 0; i < nodeCount; i++) {
+        const level = Math.floor(Math.log2(i + 1)); // 0-indexed level
+        const positionInLevel = i - (Math.pow(2, level) - 1);
+        
+        // Calculate horizontal spacing based on the maximum possible nodes at this level
+        const maxNodesInLevel = Math.pow(2, level);
+        const levelWidth = containerWidth / maxNodesInLevel;
+        
+        // Center the node within its position
+        const x = (positionInLevel + 0.5) * levelWidth - 30; // Subtract half node width
+        const y = level * levelHeight;
+        
+        positions.push({ x, y });
+      }
+      
+      return positions;
+    }
+    
+    /**
+     * Renders all steps as separate blocks on the page with both array and tree visualization.
+     */
+    function renderAllSteps(steps) {
+      const container = document.getElementById("steps-container");
+      // Clear the container before rendering new steps
+      container.innerHTML = "";
+      
+      steps.forEach((step, index) => {
+        // Update phase indicator for the current step
+        if (index === steps.length - 1) {
+          document.getElementById("phase-indicator").textContent = `Phase: ${step.phase}`;
+        }
+        
+        const stepBlock = document.createElement("div");
+        stepBlock.className = "step-block";
+        
+        // Step description
+        const stepTitle = document.createElement("div");
+        stepTitle.className = "step-title";
+        stepTitle.textContent = `Step ${index + 1} (${step.phase}): ${step.note}`;
+        stepBlock.appendChild(stepTitle);
+        
+        const visualizationsDiv = document.createElement("div");
+        visualizationsDiv.className = "visualizations";
+        
+        // Array visualization
+        const arrayTitle = document.createElement("div");
+        arrayTitle.className = "visualization-title";
+        arrayTitle.textContent = "Array Representation:";
+        visualizationsDiv.appendChild(arrayTitle);
+        
+        const arrayRow = document.createElement("div");
+        arrayRow.className = "array-row";
+        
+        step.array.forEach((val, idx) => {
+          const box = document.createElement("div");
+          box.classList.add("box");
+          
+          // Determine the box's role and color
+          if (step.sorted && step.sorted.includes(idx)) {
+            box.classList.add("sorted");
+          } else if (idx === step.rootMoving) {
+            box.classList.add("root-moving");
+          } else if (idx === step.largest && idx !== step.i) {
+            box.classList.add("largest");
+          } else if (idx === step.i) {
+            box.classList.add("node");
+          } else if (idx === step.left || idx === step.right) {
+            box.classList.add("child");
+          } else {
+            box.classList.add("normal");
+          }
+          
+          box.textContent = val;
+          arrayRow.appendChild(box);
+        });
+        
+        visualizationsDiv.appendChild(arrayRow);
+        
+        // Tree visualization
+        const treeTitle = document.createElement("div");
+        treeTitle.className = "visualization-title";
+        treeTitle.textContent = "Tree Representation (Heap Only):";
+        visualizationsDiv.appendChild(treeTitle);
+        
+        const treeContainer = document.createElement("div");
+        treeContainer.className = "tree-container";
+        
+        // Calculate active heap size (excluding sorted elements)
+        const activeHeapSize = step.sorted ? step.array.length - step.sorted.length : step.array.length;
+        
+        // Only show the active heap in the tree visualization
+        if (activeHeapSize > 0) {
+          // Calculate positions for a balanced tree
+          const positions = calculateBalancedTreePositions(activeHeapSize, 900, 300);
+          
+          // Draw edges first (so they appear behind nodes)
+          for (let i = 0; i < activeHeapSize; i++) {
+            const leftChildIdx = 2 * i + 1;
+            const rightChildIdx = 2 * i + 2;
+            
+            if (leftChildIdx < activeHeapSize) {
+              const edge = document.createElement("div");
+              edge.className = "tree-edge";
+              
+              const startX = positions[i].x + 30;
+              const startY = positions[i].y + 30;
+              const endX = positions[leftChildIdx].x + 30;
+              const endY = positions[leftChildIdx].y + 30;
+              
+              const length = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
+              const angle = Math.atan2(endY - startY, endX - startX) * 180 / Math.PI;
+              
+              edge.style.width = `${length}px`;
+              edge.style.left = `${startX}px`;
+              edge.style.top = `${startY}px`;
+              edge.style.transform = `rotate(${angle}deg)`;
+              
+              treeContainer.appendChild(edge);
+            }
+            
+            if (rightChildIdx < activeHeapSize) {
+              const edge = document.createElement("div");
+              edge.className = "tree-edge";
+              
+              const startX = positions[i].x + 30;
+              const startY = positions[i].y + 30;
+              const endX = positions[rightChildIdx].x + 30;
+              const endY = positions[rightChildIdx].y + 30;
+              
+              const length = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
+              const angle = Math.atan2(endY - startY, endX - startX) * 180 / Math.PI;
+              
+              edge.style.width = `${length}px`;
+              edge.style.left = `${startX}px`;
+              edge.style.top = `${startY}px`;
+              edge.style.transform = `rotate(${angle}deg)`;
+              
+              treeContainer.appendChild(edge);
+            }
+          }
+          
+          // Draw nodes for the active heap
+          for (let i = 0; i < activeHeapSize; i++) {
+            const node = document.createElement("div");
+            node.className = "tree-node";
+            
+            // Set position
+            node.style.left = `${positions[i].x}px`;
+            node.style.top = `${positions[i].y}px`;
+            
+            // Determine the node's role and color
+            if (i === step.rootMoving) {
+              node.classList.add("root-moving");
+            } else if (i === step.largest && i !== step.i) {
+              node.classList.add("largest");
+            } else if (i === step.i) {
+              node.classList.add("node");
+            } else if (i === step.left || i === step.right) {
+              node.classList.add("child");
+            } else {
+              node.classList.add("normal");
+            }
+            
+            // Add value and index
+            node.innerHTML = `${step.array[i]}<div class="node-index">[${i}]</div>`;
+            
+            treeContainer.appendChild(node);
+          }
+          
+          visualizationsDiv.appendChild(treeContainer);
+        } else {
+          // No active heap to display (all elements sorted)
+          const noTreeMsg = document.createElement("div");
+          noTreeMsg.textContent = "No active heap to display. All elements are sorted.";
+          noTreeMsg.style.textAlign = "center";
+          noTreeMsg.style.padding = "20px";
+          visualizationsDiv.appendChild(noTreeMsg);
+        }
+        
+        stepBlock.appendChild(visualizationsDiv);
+        container.appendChild(stepBlock);
+      });
+    }
+    
+    /**
+     * Initialize the visualization with a new random array
+     */
+    function initializeVisualization() {
+      document.getElementById("phase-indicator").textContent = "Phase: Initializing...";
+      
+      // Generate a random array of 10 elements with values between 10 and 99
+      const randomArray = generateRandomArray(10, 10, 99);
+      
+      // Create a copy of the array for sorting
+      const workingArray = randomArray.slice();
+      
+      // Perform heapsort and get the steps
+      const steps = heapsortSteps(workingArray);
+      
+      // Render the steps
+      renderAllSteps(steps);
+    }
+    
+    // On page load, initialize with a random array
+    window.onload = function() {
+      initializeVisualization();
+      
+      // Add event listener to the refresh button
+      document.getElementById("refresh-btn").addEventListener("click", function() {
+        initializeVisualization();
+      });
+    };
+  </script>
+</body>
+</html>

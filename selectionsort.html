@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SelectionSort: Algorithm & Visualization</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      line-height: 1.6;
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    pre {
+      background-color: #f8f8f8;
+      border: 1px solid #ccc;
+      padding: 10px;
+      overflow-x: auto;
+    }
+    /* Container for the step-by-step visualization */
+    #steps-container {
+      max-width: 950px;
+      margin: 20px auto;
+      text-align: left;
+    }
+    .step-block {
+      margin-bottom: 40px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .step-title {
+      font-weight: bold;
+      font-size: 18px;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eee;
+    }
+    .array-row {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      margin: 15px 0;
+    }
+    .box {
+      width: 50px;
+      height: 50px;
+      border: 1px solid #999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 16px;
+      color: #000;
+    }
+    /* Color codes */
+    .unsorted {
+      background-color: #b3e0f2;
+    }
+    .sorted {
+      background-color: #9370DB;
+      color: #fff;
+    }
+    .current {
+      background-color: #ffcc99;
+      border: 2px solid #ff9933;
+    }
+    .min-so-far {
+      background-color: #ff66cc;
+      color: #fff;
+    }
+    .comparing {
+      background-color: #ffb3e6;
+      border: 2px solid #ff66cc;
+    }
+    .swapping {
+      background-color: #33cc33;
+      color: #fff;
+    }
+    
+    /* Legend */
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin: 20px auto;
+      justify-content: center;
+      padding: 10px;
+      background-color: #f8f8f8;
+      border-radius: 8px;
+      max-width: 850px;
+    }
+    
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .legend-color {
+      width: 20px;
+      height: 20px;
+      border: 1px solid #999;
+    }
+    
+    .algorithm-explanation {
+      background-color: #f9f9f9;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 20px auto;
+      max-width: 800px;
+    }
+
+    /* Control section styles */
+    .control-section {
+      text-align: center;
+      margin: 20px 0;
+    }
+    
+    .refresh-button {
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 0 10px;
+      transition: background-color 0.3s;
+    }
+    
+    .refresh-button:hover {
+      background-color: #45a049;
+    }
+
+    /* Phase indicator */
+    .phase-indicator {
+      background-color: #f0f0f0;
+      border-radius: 4px;
+      padding: 10px;
+      margin: 10px auto;
+      max-width: 800px;
+      text-align: center;
+      font-weight: bold;
+    }
+    
+    /* Index indicators */
+    .index-indicators {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      margin: 5px 0 15px 0;
+    }
+    .index-box {
+      width: 50px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      border-bottom: 1px solid #999;
+    }
+  </style>
+</head>
+<body>
+  <h1>SelectionSort: Algorithm & Visualization</h1>
+  
+  <div class="algorithm-explanation">
+    <h2>Algorithm Explanation</h2>
+    <p>
+      <strong>SelectionSort</strong> is a simple sorting algorithm that works as follows:
+    </p>
+    <ol>
+      <li>Divide the array into two parts: sorted (initially empty) and unsorted (initially the whole array).</li>
+      <li>Find the minimum element in the unsorted part.</li>
+      <li>Swap this minimum element with the first element of the unsorted part.</li>
+      <li>Move the boundary between sorted and unsorted parts one element to the right.</li>
+      <li>Repeat steps 2-4 until the entire array is sorted.</li>
+    </ol>
+    <p>Time Complexity: O(n²) in all cases. Space Complexity: O(1).</p>
+  </div>
+  
+  <div class="control-section">
+    <button id="refresh-btn" class="refresh-button">Generate New Random Array</button>
+  </div>
+  
+  <div class="phase-indicator" id="phase-indicator">
+    Phase: Initializing...
+  </div>
+  
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-color unsorted"></div>
+      <span>Unsorted Element</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color sorted"></div>
+      <span>Sorted Element</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color current"></div>
+      <span>Current Position</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color min-so-far"></div>
+      <span>Minimum So Far</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color comparing"></div>
+      <span>Comparing Element</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color swapping"></div>
+      <span>Swapping Elements</span>
+    </div>
+  </div>
+  
+  <div id="steps-container"></div>
+  
+  <script>
+    /**
+     * Generate a random array of integers
+     * @param {number} size - Size of the array
+     * @param {number} min - Minimum value (inclusive)
+     * @param {number} max - Maximum value (inclusive)
+     * @returns {Array} - Random array of integers
+     */
+    function generateRandomArray(size, min, max) {
+      const array = [];
+      for (let i = 0; i < size; i++) {
+        array.push(Math.floor(Math.random() * (max - min + 1)) + min);
+      }
+      return array;
+    }
+    
+    /**
+     * Performs selection sort on the given array and records all steps
+     * @param {Array} arr - The array to sort
+     * @returns {Array} - Array of step objects describing the sorting process
+     */
+    function selectionSortSteps(arr) {
+      const steps = [];
+      const arrCopy = arr.slice();
+      
+      // Initial state
+      steps.push({
+        phase: "Initial Array",
+        note: "Starting with the unsorted array.",
+        array: arrCopy.slice(),
+        sortedIndex: -1,
+        currentIndex: 0,
+        minIndex: null,
+        comparingIndex: null,
+        isSwapping: false
+      });
+      
+      // Selection sort algorithm with step recording
+      for (let i = 0; i < arrCopy.length - 1; i++) {
+        let minIdx = i;
+        
+        // Record start of this iteration
+        steps.push({
+          phase: "Start Iteration",
+          note: `Starting iteration ${i+1}. Looking for the minimum element in the unsorted portion (index ${i} onwards).`,
+          array: arrCopy.slice(),
+          sortedIndex: i - 1,
+          currentIndex: i,
+          minIndex: minIdx,
+          comparingIndex: null,
+          isSwapping: false
+        });
+        
+        // Find the minimum element in the remaining unsorted array
+        for (let j = i + 1; j < arrCopy.length; j++) {
+          // Record comparison step
+          steps.push({
+            phase: "Compare",
+            note: `Comparing current minimum (${arrCopy[minIdx]} at index ${minIdx}) with element at index ${j} (${arrCopy[j]}).`,
+            array: arrCopy.slice(),
+            sortedIndex: i - 1,
+            currentIndex: i,
+            minIndex: minIdx,
+            comparingIndex: j,
+            isSwapping: false
+          });
+          
+          if (arrCopy[j] < arrCopy[minIdx]) {
+            minIdx = j;
+            
+            // Record new minimum found
+            steps.push({
+              phase: "Update Minimum",
+              note: `Found new minimum ${arrCopy[minIdx]} at index ${minIdx}.`,
+              array: arrCopy.slice(),
+              sortedIndex: i - 1,
+              currentIndex: i,
+              minIndex: minIdx,
+              comparingIndex: null,
+              isSwapping: false
+            });
+          }
+        }
+        
+        // Only swap if necessary
+        if (minIdx !== i) {
+          // Record before swap
+          steps.push({
+            phase: "Before Swap",
+            note: `About to swap element at index ${i} (${arrCopy[i]}) with minimum element at index ${minIdx} (${arrCopy[minIdx]}).`,
+            array: arrCopy.slice(),
+            sortedIndex: i - 1,
+            currentIndex: i,
+            minIndex: minIdx,
+            comparingIndex: null,
+            isSwapping: true
+          });
+          
+          // Swap the found minimum element with the first element of unsorted part
+          [arrCopy[i], arrCopy[minIdx]] = [arrCopy[minIdx], arrCopy[i]];
+          
+          // Record after swap
+          steps.push({
+            phase: "After Swap",
+            note: `Swapped elements: placed ${arrCopy[i]} at index ${i} and moved ${arrCopy[minIdx]} to index ${minIdx}.`,
+            array: arrCopy.slice(),
+            sortedIndex: i,
+            currentIndex: null,
+            minIndex: null,
+            comparingIndex: null,
+            isSwapping: false
+          });
+        } else {
+          // No swap needed, element already in place
+          steps.push({
+            phase: "No Swap Needed",
+            note: `Element at index ${i} (${arrCopy[i]}) is already the minimum. No swap needed.`,
+            array: arrCopy.slice(),
+            sortedIndex: i,
+            currentIndex: null,
+            minIndex: null,
+            comparingIndex: null,
+            isSwapping: false
+          });
+        }
+      }
+      
+      // Final state
+      steps.push({
+        phase: "Final Sorted Array",
+        note: "The array is now fully sorted.",
+        array: arrCopy.slice(),
+        sortedIndex: arrCopy.length - 1,
+        currentIndex: null,
+        minIndex: null,
+        comparingIndex: null,
+        isSwapping: false
+      });
+      
+      return steps;
+    }
+    
+    /**
+     * Renders all steps as separate blocks on the page
+     */
+    function renderAllSteps(steps) {
+      const container = document.getElementById("steps-container");
+      // Clear the container before rendering new steps
+      container.innerHTML = "";
+      
+      steps.forEach((step, index) => {
+        // Update phase indicator for the current step
+        if (index === steps.length - 1) {
+          document.getElementById("phase-indicator").textContent = `Phase: ${step.phase}`;
+        }
+        
+        const stepBlock = document.createElement("div");
+        stepBlock.className = "step-block";
+        
+        // Step description
+        const stepTitle = document.createElement("div");
+        stepTitle.className = "step-title";
+        stepTitle.textContent = `Step ${index + 1} (${step.phase}): ${step.note}`;
+        stepBlock.appendChild(stepTitle);
+        
+        // Index indicators
+        const indexIndicators = document.createElement("div");
+        indexIndicators.className = "index-indicators";
+        
+        for (let i = 0; i < step.array.length; i++) {
+          const indexBox = document.createElement("div");
+          indexBox.className = "index-box";
+          indexBox.textContent = i;
+          indexIndicators.appendChild(indexBox);
+        }
+        
+        stepBlock.appendChild(indexIndicators);
+        
+        // Array visualization
+        const arrayRow = document.createElement("div");
+        arrayRow.className = "array-row";
+        
+        step.array.forEach((val, idx) => {
+          const box = document.createElement("div");
+          box.className = "box";
+          box.textContent = val;
+          
+          // Apply appropriate styling based on the current step
+          if (idx <= step.sortedIndex) {
+            box.classList.add("sorted");
+          } else {
+            box.classList.add("unsorted");
+          }
+          
+          if (idx === step.currentIndex) {
+            box.classList.add("current");
+          }
+          
+          if (idx === step.minIndex) {
+            box.classList.add("min-so-far");
+          }
+          
+          if (idx === step.comparingIndex) {
+            box.classList.add("comparing");
+          }
+          
+          if (step.isSwapping && (idx === step.currentIndex || idx === step.minIndex)) {
+            box.classList.add("swapping");
+          }
+          
+          arrayRow.appendChild(box);
+        });
+        
+        stepBlock.appendChild(arrayRow);
+        container.appendChild(stepBlock);
+      });
+    }
+    
+    /**
+     * Starts the visualization by generating a random array, processing the steps, and rendering them.
+     */
+    function startVisualization() {
+      const randomArray = generateRandomArray(10, 1, 99);
+      const steps = selectionSortSteps(randomArray);
+      renderAllSteps(steps);
+    }
+    
+    document.getElementById("refresh-btn").addEventListener("click", startVisualization);
+    
+    // Initial visualization
+    startVisualization();
+  </script>
+</body>
+</html>

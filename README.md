@@ -1,4 +1,4 @@
-# Sorting
+# Sorting Algorithms
 AP CSA Sorting Algorithms
 Here is a list of algorithms:
 1. [Bubble Sort](./bubblesort.html)
@@ -9,7 +9,7 @@ Here is a list of algorithms:
 7. [Heap Sort](heapsort.html)
 8. [Merge Sort](mergesort.html)
 
-# Java Sorting Algorithms
+## Java Implementation of Sorting Algorithms
 
 Below is a minimalistic implementation of various sorting algorithms in Java. 
 ```java
